@@ -1,6 +1,7 @@
 import { Router } from "express"; // Import the Router method from the express package
-import { registerUser } from "../controllers/user.controller.js"; // Import the registerUser controller function
+import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js"; // Import the registerUser controller function
 import { upload } from "../middlewares/multer.middleware.js"; // Import the upload middleware
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -19,5 +20,10 @@ router.route("/register").post(
   ]),
   registerUser // Controller function for registering a user
 );
+
+router.route("/login").post(loginUser);
+
+//secured routes
+router.route("/logout").post( verifyJWT, logoutUser)
 
 export default router;
