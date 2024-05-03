@@ -3,6 +3,7 @@ import { apiError } from "../utils/apiError.js"; // Import the apiError class
 import { User } from "../models/user.model.js"; // Import the User model
 import { uploadOnCloudinary } from "../utils/cloudinary.js"; // Import the uploadOnCloudinary utility function to upload images to Cloudinary
 import { apiResponce } from "../utils/apiResponce.js"; // Import the apiResponce class
+import jwt from "jsonwebtoken"; // Import the jsonwebtoken package
 
 // step 5: Generate access and refresh token method
 const generateAccessTokenAndRefreshToken = async (userID) => {
@@ -185,9 +186,42 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, {}, "Logout successful"))  // step 3: send the logout respons
 })
 
+// Refresh access token 
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+  const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+  const user = await User.findById(decodedToken?._id);
+  if (!user) {
+    throw new apiError(401, "Invalid refresh token");
+  }
+
+  if (user?.refreshToken !== incomingRefreshToken) {
+    throw new apiError(401, "Refresh token is expired or used");
+  }
+
+  const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshToken(user._id);
+
+  const options = {
+    httpOnly: true,
+    secure: true
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(new apiResponce(200, {
+      accessToken, refreshToken: newRefreshToken
+    }, "Token refreshed successfully"));
+
+})
+
 // Export the registerUser function
 export {
   registerUser,
   loginUser,
-  logoutUser
+  logoutUser,
+  refreshAccessToken
 }
