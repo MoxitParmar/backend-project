@@ -191,6 +191,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   // get the refresh token from the cookie or request body
   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
+  if (!incomingRefreshToken) {
+    throw new apiError(401, "Refresh token is required");
+  }
+
   // decode incoming refresh token
   const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
 
