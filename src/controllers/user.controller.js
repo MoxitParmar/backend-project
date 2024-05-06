@@ -211,7 +211,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   // generate new access token and refresh token
-  const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshToken(user._id);
+  const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id);
 
   // send the new access token and refresh token in the cookie
   const options = {
@@ -222,9 +222,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", newRefreshToken, options)
+    .cookie("refreshToken", refreshToken, options)
     .json(new apiResponce(200, {
-      accessToken, refreshToken: newRefreshToken
+      accessToken, refreshToken
     }, "Token refreshed successfully"));
 
 })
@@ -317,7 +317,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       $match: { username: username?.toLowerCase() }
     },
     {
-      // Lookup the subscriptions collection to get the subscribers
+      // add subscribers array in that user 
       $lookup: {
         from: "subscriptions",
         localField: "_id",
@@ -326,7 +326,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       }
       
     },
-    // lookup the subscriptions collection to get the channels subscribed to
+    // add subscribedTo array in that user
     {
       $lookup: {
         from: "subscriptions",
@@ -335,7 +335,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         as: "subscribedTo"
       }
     },
-    // add fields to the result
+    // add fields like subscriberCount, channelsSubscribedToCount, isSubscribed in that user
     {
       $addFields: {
         subscriberCount: { $size: "$subscribers" },
@@ -351,7 +351,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         }
       }
     },
-    // project the fields to return in the response
+    // project the fields to return in the response -> channel[0]
     {
       $project: {
         fullName: 1,
@@ -370,15 +370,18 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     throw new apiError(404, "Channel not found");
   }
 
+  // return the channel info in the response
   return res.status(200).json(new apiResponce(200, channel[0], "Channel found successfully"));
 })
 
 const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
+      //there is the user that we want to get the watch history
       $match: { _id: new mongoose.Types.ObjectId(req.user._id) }
     },
     {
+      // add watchHistory array in that user which contains all the videos collections
       $lookup: {
         from: "videos",
         localField: "watchHistory",
@@ -386,6 +389,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         as: "watchHistory",
         pipeline: [
           {
+            //now in videos collection we have the owner field to each videos
+            //so here we add owner array in all that videos 
             $lookup: {
               from: "users",
               localField: "owner",
@@ -393,6 +398,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
               as: "owner",
               pipeline: [
                 {
+                  // we dont want to give all the user info in owner array so we project only required fields
                   $project: {
                     fullName: 1,
                     username: 1,
@@ -402,6 +408,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
               ]
             }
           }, {
+            // convert the owner array to object in videos collection
             $addFields: {
               owner: { $first: "$owner"}
             }
@@ -411,8 +418,11 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     }
   ])
 
+  // return the watch history array of the user
   return res.status(200).json(new apiResponce(200, user[0]?.watchHistory || [], "Watch history found successfully"));
 })
+
+
 
 // Export the registerUser function
 export {
