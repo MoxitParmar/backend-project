@@ -32,4 +32,28 @@ const uploadOnCloudinary = async (localFilePath) => {
         }
 }
 
-export { uploadOnCloudinary };
+// Function to extract the public ID from a cloudinary URL
+const extractPublicId = (cloudinaryUrl) => {
+        // Split the URL by / to get the public ID
+        const splitUrl = cloudinaryUrl.split("/");
+
+        // Get the last part of the URL which is the public ID
+        const publicId = splitUrl[splitUrl.length - 1].split(".")[0];
+
+        return publicId; // Return the extracted public ID
+}
+
+// function to delete a file from cloudinary
+const deleteFromCloudinary = async (publicId) => {
+        try {
+                // Delete the file from cloudinary
+                const response = await cloudinary.uploader.destroy(publicId);
+
+                return response; // Return the cloudinary response
+
+        } catch (error) {
+                return null; // Return null in case of error
+        }
+}
+
+export { uploadOnCloudinary , deleteFromCloudinary , extractPublicId};

@@ -19,7 +19,10 @@ app.use(cookieParser()); // Parsing cookies from incoming requests
 // Importing the user routes
 import userRouter from "./routes/user.routes.js";
 
+
+
 // Declaring the user routes
 app.use("/api/v1/users", userRouter);
+
 
 export { app }; // Exporting the Express application
