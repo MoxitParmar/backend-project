@@ -10,7 +10,8 @@ import {
   updateAccountDetails, 
   updateUserAvatar, 
   updateUserCoverImage, 
-  getUserChannelProfile
+  getUserChannelProfile,
+  deleteCurrentUser
 } from "../controllers/user.controller.js"; // Import the registerUser controller function
 import { upload } from "../middlewares/multer.middleware.js"; // Import the upload middleware
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -42,6 +43,7 @@ router.route("/refresh").post(refreshAccessToken)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/current-user").get(verifyJWT, getCurrentUser)
 router.route("/update-account").patch(verifyJWT, updateAccountDetails)
+router.route("/delete-account").delete(verifyJWT, deleteCurrentUser )
 
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
 router.route("/coverImage").patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)

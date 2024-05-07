@@ -282,6 +282,30 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, req.user, "User found successfully"));
 });
 
+//delete current user
+const deleteCurrentUser = asyncHandler(async (req, res) => {
+
+  const publicId = await extractPublicId(req.user.coverImage);
+  const deleteResponse = await deleteFromCloudinary(publicId);
+
+  const publicId0 = await extractPublicId(req.user.avatar);
+  const deleteResponse0 = await deleteFromCloudinary(publicId0);
+
+  await User.findByIdAndDelete(req.user._id);
+
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new apiResponce(200, {}, "User deleted successfully"));
+});
+
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
 
@@ -497,5 +521,6 @@ export {
   updateUserAvatar,
   updateUserCoverImage,
   getUserChannelProfile,
-  getWatchHistory
+  getWatchHistory,
+  deleteCurrentUser
 }
