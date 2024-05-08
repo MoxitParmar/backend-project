@@ -43,7 +43,7 @@ const extractPublicId = (cloudinaryUrl) => {
         return publicId; // Return the extracted public ID
 }
 
-// function to delete a file from cloudinary
+// function to delete an image from cloudinary
 const deleteFromCloudinary = async (publicId) => {
         try {
                 // Delete the file from cloudinary
@@ -56,4 +56,31 @@ const deleteFromCloudinary = async (publicId) => {
         }
 }
 
-export { uploadOnCloudinary , deleteFromCloudinary , extractPublicId};
+// function to delete a video from cloudinary
+const deletevideoFromCloudinary = async (publicId) => {
+        try {
+                // Delete the file from cloudinary
+                const response = await cloudinary.uploader.destroy(publicId, { resource_type : 'video' });
+
+                return response; // Return the cloudinary response
+
+        } catch (error) {
+                return null; // Return null in case of error
+        }
+}
+
+// function to get the duration of a video from cloudinary
+const getVideoLength = async (publicId) => {
+        try {
+                // Delete the file from cloudinary
+                const response = await cloudinary.api.resource(publicId, { resource_type: 'video' , media_metadata: true});
+
+                return response.duration; // Return the cloudinary response
+
+        } catch (error) {
+                return 10; // Return null in case of error
+        }
+}
+
+// Export the functions to be used in other files
+export { uploadOnCloudinary , deleteFromCloudinary , extractPublicId, deletevideoFromCloudinary, getVideoLength};

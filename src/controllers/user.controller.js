@@ -120,6 +120,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, createdUser, "User created successfully"));
 });
 
+// Login user controller
 const loginUser = asyncHandler(async (req, res) => {
   // step 1: get the user data from front end
   // step 2: validate login by username or password
@@ -258,6 +259,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
+// Change current password
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
@@ -276,6 +278,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, {}, "Password changed successfully"));
 });
 
+// Get current user
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
@@ -306,6 +309,7 @@ const deleteCurrentUser = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, {}, "User deleted successfully"));
 });
 
+// Update account details
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
 
@@ -326,6 +330,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, user, "Account details updated successfully"));
 });
 
+// Update user avatar
 const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
 
@@ -357,6 +362,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, user, "Avatar updated successfully"));
 });
 
+// Update user cover image
 const updateUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
 
@@ -388,6 +394,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     .json(new apiResponce(200, user, "Cover image updated successfully"));
 });
 
+// Get user channel profile
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
@@ -459,6 +466,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new apiResponce(200, channel[0], "Channel found successfully"));
 })
 
+// Get watch history
 const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
