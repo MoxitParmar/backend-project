@@ -79,7 +79,7 @@ Follow these steps to set up the project on your local machine:
 2. Set up the backend:
     - Navigate to the backend folder: `cd backend`.
     - Install dependencies: `npm install`
-    - Set up environment variables: Create a `.env` file.
+    - Set up environment variables: Create a `.env` file based on .env.sample file.
     - Start the backend server: `npm run dev`
 
 3. Access the application:
