@@ -2,6 +2,8 @@
 
 VideoVerse is a complete backend web application similar to YouTube, built with the MERN stack. It offers many of the same features as YouTube. the backend for this project is completed and Now gearing up to dive into frontend development for this project. Stay tuned for more updates! 💻
 
+this project is inspired by [chai-backend series](https://youtube.com/playlist?list=PLu71SKxNbfoBGh_8p_NS-ZAh6v7HhYqHW&feature=shared) 
+
 ---
 ## functionality of the VideoVerse backend
 ### Authentication
